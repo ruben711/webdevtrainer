@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ════════════════════════════════════════════════════════════════════
+   CodeKwartier — globals (Tailwind entry + tokens + light palette)
+
+   css/styles.css blijft de bron van waarheid voor het DONKERE design en
+   wordt ongewijzigd geïmporteerd vóór dit bestand. Hier voegen we toe:
+     1. RGB-triple spiegels van de kerntokens (Tailwind <alpha-value>)
+     2. Het light-palet (REVIEW ME) onder :root[data-theme="light"]
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. RGB-triple mirrors of the dark tokens in css/styles.css ──────── */
+:root {
+  --accent-rgb: 196 245 66;
+  --accent-deep-rgb: 166 224 34;
+  --accent-ink-rgb: 13 21 0;
+  --cyan-rgb: 52 227 218;
+  --bg-rgb: 10 12 14;
+  --bg-2-rgb: 14 17 19;
+  --surface-rgb: 20 24 27;
+  --surface-2-rgb: 26 31 35;
+  --surface-3-rgb: 35 42 47;
+  --text-rgb: 234 240 242;
+  --text-2-rgb: 153 163 170;
+  --text-3-rgb: 95 105 112;
+  --good-rgb: 196 245 66;
+  --bad-rgb: 255 93 77;
+  --warn-rgb: 245 177 63;
+  --gold-rgb: 245 196 81;
+
+  color-scheme: dark;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   2. LIGHT MODE — eerste-versie palet in dezelfde geest (REVIEW ME).
+      Koele bijna-witte surfaces; lime is verdiept zodat accent-als-tekst
+      leesbaar blijft op licht (de signature electric-lime fills krijgen
+      witte "ink"). Toggle via <html data-theme="light"> (anti-FOUC script).
+      Accent blijft conceptueel "lime" — enkel donkerder voor contrast.
+   ════════════════════════════════════════════════════════════════════ */
+:root[data-theme="light"] {
+  --accent: #4f8a00;
+  --accent-deep: #3f6e00;
+  --accent-ink: #ffffff;
+  --accent-soft: rgba(79, 138, 0, 0.12);
+  --accent-line: rgba(79, 138, 0, 0.34);
+  --glow: rgba(79, 138, 0, 0.26);
+
+  --cyan: #0d9488;
+  --cyan-soft: rgba(13, 148, 136, 0.13);
+
+  --bg: #f3f5f3;
+  --bg-2: #eaeeec;
+  --surface: #ffffff;
+  --surface-2: #f4f6f4;
+  --surface-3: #e6eae7;
+  --border: rgba(13, 21, 0, 0.1);
+  --border-2: rgba(13, 21, 0, 0.18);
+
+  --text: #161a16;
+  --text-2: #4c565a;
+  --text-3: #79858b;
+
+  --gold: #c9961f;
+  --silver: #8b97a0;
+  --bronze: #b06a32;
+  --bad: #e0402e;
+  --warn: #c2870f;
+
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 16px 36px -28px rgba(20, 30, 0, 0.32);
+
+  /* RGB mirrors for light */
+  --accent-rgb: 79 138 0;
+  --accent-deep-rgb: 63 110 0;
+  --accent-ink-rgb: 255 255 255;
+  --cyan-rgb: 13 148 136;
+  --bg-rgb: 243 245 243;
+  --bg-2-rgb: 234 238 236;
+  --surface-rgb: 255 255 255;
+  --surface-2-rgb: 244 246 244;
+  --surface-3-rgb: 230 234 231;
+  --text-rgb: 22 26 22;
+  --text-2-rgb: 76 86 90;
+  --text-3-rgb: 121 133 139;
+  --good-rgb: 79 138 0;
+  --bad-rgb: 224 64 46;
+  --warn-rgb: 194 135 15;
+  --gold-rgb: 201 150 31;
+
+  color-scheme: light;
+}
+
+/* Smooth the flip between themes (not on first paint — the anti-FOUC
+   script sets data-theme before this transitions matter). */
+:root.theme-ready body,
+:root.theme-ready .sidebar,
+:root.theme-ready .card,
+:root.theme-ready .hero {
+  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease),
+    color 0.25s var(--ease);
+}
