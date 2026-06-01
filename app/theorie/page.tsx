@@ -57,10 +57,17 @@ function McItem({ item }: { item: TheoryItem }) {
 
 function OpenItem({ item }: { item: TheoryItem }) {
   const [show, setShow] = useState(false);
+  const [answer, setAnswer] = useState("");
   return (
     <div className="card" style={{ padding: "18px 20px" }}>
       <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 15.5, marginBottom: 6 }}>{item.question}</div>
       <span className="chip" style={{ marginTop: 4 }}>open vraag</span>
+      <textarea
+        className="note-area"
+        placeholder="Typ hier je antwoord…"
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+      />
       <div style={{ marginTop: 14 }}>
         <button className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: 13 }} onClick={() => setShow((s) => !s)}>
           <Icon name="idea" size={15} />
@@ -120,7 +127,7 @@ export default function TheoriePage() {
       {current && (
         <div style={{ display: "grid", gap: 12 }}>
           {current.theory.map((item, i) => (
-            <Reveal key={item.id} delay={Math.min(i * 50, 250)}>
+            <Reveal key={current.chapter.id + "-" + item.id} delay={Math.min(i * 50, 250)}>
               {item.type === "mc" ? <McItem item={item} /> : <OpenItem item={item} />}
             </Reveal>
           ))}

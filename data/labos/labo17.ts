@@ -89,7 +89,7 @@ export const labo17: ChapterContent = {
       tag: "JS",
       difficulty: "easy",
       brief:
-        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>initialen(voornaam, familienaam)</code> die de twee initialen als HOOFDLETTERS teruggeeft. Verwijder eerst spaties vooraan/achteraan met <code>trim()</code>, neem dan het eerste karakter met <code>slice(0, 1)</code> en zet het om met <code>toUpperCase()</code>. <code>initialen(\"jan\", \"janssens\")</code> geeft <code>\"JJ\"</code>. Het testbestand roept je functie aan en logt het resultaat.',
+        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>initialen(voornaam, familienaam)</code> die de twee initialen als HOOFDLETTERS teruggeeft. Verwijder eerst spaties vooraan/achteraan met <code>trim()</code>, neem dan het eerste karakter met <code>slice(0, 1)</code> en zet het om met <code>toUpperCase()</code>. <code>initialen(\"jan\", \"janssens\")</code> geeft <code>\"JJ\"</code>. Test je functie met de knop <b>Run &amp; check</b>.',
       hint: "Per naam: naam.trim().slice(0, 1).toUpperCase(). Plak de twee letters aan elkaar met +. Schrijf één arrow function met const, en vergeet de return niet.",
       topics: ["slice", "trim", "toUpperCase", "functions", "return"],
       files: [
@@ -98,20 +98,18 @@ export const labo17: ChapterContent = {
           content:
             "// Schrijf hier de arrow function initialen(voornaam, familienaam)\n// Tip: naam.trim().slice(0, 1).toUpperCase()\nconst initialen = (voornaam, familienaam) => {\n  // ...\n};\n",
         },
-        {
-          name: "scripts/test.js",
-          content:
-            '// Dit testbestand roept jouw functie aan. Je hoeft het niet te wijzigen.\nconsole.log(initialen("jan", "janssens"));\nconsole.log(initialen("  ada ", "Lovelace"));\nconsole.log(initialen("guido", "van rossum"));',
-          readOnly: true,
-        },
       ],
       checks: [
         {
-          type: "console",
+          type: "function",
           id: "initialen-werkt",
           label: "initialen geeft JJ, AL en GV terug",
-          expected: "JJ\nAL\nGV",
-          match: "equals",
+          name: "initialen",
+          cases: [
+            { args: ["jan", "janssens"], expected: "JJ" },
+            { args: ["  ada ", "Lovelace"], expected: "AL" },
+            { args: ["guido", "van rossum"], expected: "GV" },
+          ],
         },
         {
           type: "static",
@@ -209,7 +207,7 @@ export const labo17: ChapterContent = {
       tag: "JS",
       difficulty: "hard",
       brief:
-        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>vervang(zin)</code> die elk los woord <code>\"de\"</code> of <code>\"De\"</code> vervangt door <code>\"het\"</code> en de nieuwe zin teruggeeft. Een <code>\"de\"</code> midden in een woord (zoals in <code>\"ronde\"</code>) mag je NIET vervangen. <code>Gebruik geen</code> <code>replace</code>, <code>replaceAll</code> of <code>split</code> — werk met <code>slice</code> en de tekens errond. Het testbestand logt je resultaten.',
+        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>vervang(zin)</code> die elk los woord <code>\"de\"</code> of <code>\"De\"</code> vervangt door <code>\"het\"</code> en de nieuwe zin teruggeeft. Een <code>\"de\"</code> midden in een woord (zoals in <code>\"ronde\"</code>) mag je NIET vervangen. <code>Gebruik geen</code> <code>replace</code>, <code>replaceAll</code> of <code>split</code> — werk met <code>slice</code> en de tekens errond. Test je functie met de knop <b>Run &amp; check</b>.',
       hint: 'Loop teken per teken. Een "de" is een los woord als zin.slice(i, i + 2) gelijk is aan "de" of "De", én links staat het begin van de zin of een spatie (i === 0 || zin[i-1] === " "), én rechts staat het einde of een spatie. Plak dan "het" en sla het tweede teken over met i++.',
       topics: ["slice", "substring", "strings vergelijken", "loops", "return"],
       files: [
@@ -218,21 +216,22 @@ export const labo17: ChapterContent = {
           content:
             '// Schrijf hier de arrow function vervang(zin)\n// Vervang elk LOS woord \'de\'/\'De\' door \'het\'. Geen replace/replaceAll/split!\nconst vervang = (zin) => {\n  // ...\n};\n',
         },
-        {
-          name: "scripts/test.js",
-          content:
-            '// Dit testbestand roept jouw functie aan. Je hoeft het niet te wijzigen.\nconsole.log(vervang("Gisteren zat de jongen op de stoep en at de helft van de appel"));\nconsole.log(vervang("de man riep de"));\nconsole.log(vervang("De hond"));\nconsole.log(vervang("ronde tafel"));',
-          readOnly: true,
-        },
       ],
       checks: [
         {
-          type: "console",
+          type: "function",
           id: "vervang-werkt",
           label: "vervang zet enkel losse 'de'/'De' om naar 'het'",
-          expected:
-            "Gisteren zat het jongen op het stoep en at het helft van het appel\nhet man riep het\nhet hond\nronde tafel",
-          match: "equals",
+          name: "vervang",
+          cases: [
+            {
+              args: ["Gisteren zat de jongen op de stoep en at de helft van de appel"],
+              expected: "Gisteren zat het jongen op het stoep en at het helft van het appel",
+            },
+            { args: ["de man riep de"], expected: "het man riep het" },
+            { args: ["De hond"], expected: "het hond" },
+            { args: ["ronde tafel"], expected: "ronde tafel" },
+          ],
         },
         {
           type: "static",
@@ -266,7 +265,7 @@ export const labo17: ChapterContent = {
       tag: "JS",
       difficulty: "easy",
       brief:
-        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>alfabetischEerste(a, b)</code> die van twee woorden het woord teruggeeft dat alfabetisch eerst komt. Gebruik <code>localeCompare</code>, NIET de operatoren <code>&lt;</code> of <code>&gt;</code>. Bij gelijke woorden geef je <code>a</code> terug. Het testbestand logt je resultaten.',
+        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>alfabetischEerste(a, b)</code> die van twee woorden het woord teruggeeft dat alfabetisch eerst komt. Gebruik <code>localeCompare</code>, NIET de operatoren <code>&lt;</code> of <code>&gt;</code>. Bij gelijke woorden geef je <code>a</code> terug. Test je functie met de knop <b>Run &amp; check</b>.',
       hint: "a.localeCompare(b) geeft een negatief getal als a vóór b komt, 0 bij gelijk, positief als a na b komt. Geef a terug als a.localeCompare(b) <= 0, anders b.",
       topics: ["localeCompare", "strings vergelijken", "functions", "return"],
       files: [
@@ -275,20 +274,18 @@ export const labo17: ChapterContent = {
           content:
             "// Schrijf hier de arrow function alfabetischEerste(a, b)\n// Gebruik localeCompare, niet < of >.\nconst alfabetischEerste = (a, b) => {\n  // ...\n};\n",
         },
-        {
-          name: "scripts/test.js",
-          content:
-            '// Dit testbestand roept jouw functie aan. Je hoeft het niet te wijzigen.\nconsole.log(alfabetischEerste("zebra", "aap"));\nconsole.log(alfabetischEerste("appel", "beer"));\nconsole.log(alfabetischEerste("kat", "kat"));',
-          readOnly: true,
-        },
       ],
       checks: [
         {
-          type: "console",
+          type: "function",
           id: "eerste-werkt",
           label: "alfabetischEerste kiest het juiste woord",
-          expected: "aap\nappel\nkat",
-          match: "equals",
+          name: "alfabetischEerste",
+          cases: [
+            { args: ["zebra", "aap"], expected: "aap" },
+            { args: ["appel", "beer"], expected: "appel" },
+            { args: ["kat", "kat"], expected: "kat" },
+          ],
         },
         {
           type: "static",
@@ -322,7 +319,7 @@ export const labo17: ChapterContent = {
       tag: "JS",
       difficulty: "medium",
       brief:
-        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>sorteerGemeenten(gemeenten)</code> die een array van gemeentenamen alfabetisch gesorteerd teruggeeft. Geef een vergelijkingsfunctie mee aan <code>sort</code> die met <code>localeCompare</code> vergelijkt. Het testbestand logt de gesorteerde lijst met komma\'s.',
+        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>sorteerGemeenten(gemeenten)</code> die een array van gemeentenamen alfabetisch gesorteerd teruggeeft. Geef een vergelijkingsfunctie mee aan <code>sort</code> die met <code>localeCompare</code> vergelijkt. Test je functie met de knop <b>Run &amp; check</b>.',
       hint: "Maak eerst een kopie met gemeenten.slice(), zodat je het origineel niet wijzigt. Sorteer dan: kopie.sort((a, b) => a.localeCompare(b)) en geef de kopie terug.",
       topics: ["sort", "localeCompare", "arrays", "vergelijkingsfunctie", "slice"],
       files: [
@@ -331,20 +328,20 @@ export const labo17: ChapterContent = {
           content:
             "// Schrijf hier de arrow function sorteerGemeenten(gemeenten)\n// Sorteer alfabetisch met een vergelijkingsfunctie die localeCompare gebruikt.\nconst sorteerGemeenten = (gemeenten) => {\n  // ...\n};\n",
         },
-        {
-          name: "scripts/test.js",
-          content:
-            '// Dit testbestand roept jouw functie aan. Je hoeft het niet te wijzigen.\nconsole.log(sorteerGemeenten(["Kortrijk", "Brugge", "Antwerpen", "Gent"]).join(", "));\nconsole.log(sorteerGemeenten(["ezel", "aap"]).join(", "));',
-          readOnly: true,
-        },
       ],
       checks: [
         {
-          type: "console",
+          type: "function",
           id: "sorteren-werkt",
           label: "sorteerGemeenten sorteert alfabetisch",
-          expected: "Antwerpen, Brugge, Gent, Kortrijk\naap, ezel",
-          match: "equals",
+          name: "sorteerGemeenten",
+          cases: [
+            {
+              args: [["Kortrijk", "Brugge", "Antwerpen", "Gent"]],
+              expected: ["Antwerpen", "Brugge", "Gent", "Kortrijk"],
+            },
+            { args: [["ezel", "aap"]], expected: ["aap", "ezel"] },
+          ],
         },
         {
           type: "static",
@@ -447,7 +444,7 @@ export const labo17: ChapterContent = {
       tag: "JS",
       difficulty: "medium",
       brief:
-        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>valideerEmail(email)</code> die <code>true</code> teruggeeft voor een geldig adres en anders <code>false</code>. Regels (zoals in de form-validatie van het labo): na <code>trim()</code> moet er exact één <code>@</code>-teken zijn, met minstens één karakter vóór én na de <code>@</code>. Extra spaties links/rechts zijn toegelaten. Het testbestand logt je resultaten.',
+        'Schrijf in <code>scripts/code.js</code> een <code>arrow function</code> <code>valideerEmail(email)</code> die <code>true</code> teruggeeft voor een geldig adres en anders <code>false</code>. Regels (zoals in de form-validatie van het labo): na <code>trim()</code> moet er exact één <code>@</code>-teken zijn, met minstens één karakter vóór én na de <code>@</code>. Extra spaties links/rechts zijn toegelaten. Test je functie met de knop <b>Run &amp; check</b>.',
       hint: 'Werk op email.trim(). Tel de @-tekens en onthoud de positie van de laatste in een for-loop. Geldig als aantal === 1 én de positie > 0 én positie < lengte - 1. Gebruik GEEN regex of split — oefen met losse karakters (email[i] === "@").',
       topics: ["strings", "trim", "loops", "validatie", "return"],
       files: [
@@ -456,20 +453,22 @@ export const labo17: ChapterContent = {
           content:
             "// Schrijf hier de arrow function valideerEmail(email)\n// Geldig = na trim exact 1 @-teken, met minstens 1 karakter ervoor en erna.\nconst valideerEmail = (email) => {\n  // ...\n};\n",
         },
-        {
-          name: "scripts/test.js",
-          content:
-            '// Dit testbestand roept jouw functie aan. Je hoeft het niet te wijzigen.\nconsole.log(valideerEmail("jan@vives.be"));\nconsole.log(valideerEmail("a@b"));\nconsole.log(valideerEmail("  x@y  "));\nconsole.log(valideerEmail("geenapestaart"));\nconsole.log(valideerEmail("@b"));\nconsole.log(valideerEmail("a@"));\nconsole.log(valideerEmail("a@@b"));',
-          readOnly: true,
-        },
       ],
       checks: [
         {
-          type: "console",
+          type: "function",
           id: "email-werkt",
           label: "valideerEmail keurt adressen correct goed of af",
-          expected: "true\ntrue\ntrue\nfalse\nfalse\nfalse\nfalse",
-          match: "equals",
+          name: "valideerEmail",
+          cases: [
+            { args: ["jan@vives.be"], expected: true },
+            { args: ["a@b"], expected: true },
+            { args: ["  x@y  "], expected: true },
+            { args: ["geenapestaart"], expected: false },
+            { args: ["@b"], expected: false },
+            { args: ["a@"], expected: false },
+            { args: ["a@@b"], expected: false },
+          ],
         },
         {
           type: "static",

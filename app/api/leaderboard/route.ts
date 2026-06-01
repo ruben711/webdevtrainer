@@ -1,4 +1,5 @@
 import { hasUpstash, hget, hgetallObj, hset } from "@/lib/upstash";
+import { sanitizeStyle, type NameStyle, type NameTag } from "@/lib/nameStyle";
 
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
@@ -13,8 +14,8 @@ export interface LbProfile {
   solved: number;
   streak: number;
   admin?: boolean;
-  tag?: { label: string; color: string; emoji?: string } | null;
-  style?: Record<string, unknown> | null;
+  tag?: NameTag | null;
+  style?: NameStyle | null;
   lastSeen: number;
 }
 
@@ -65,10 +66,10 @@ export async function POST(req: Request) {
       level: Math.max(1, Math.floor(body.level ?? existing.level ?? 1)),
       solved: Math.max(0, Math.floor(body.solved ?? existing.solved ?? 0)),
       streak: Math.max(0, Math.floor(body.streak ?? existing.streak ?? 0)),
-      // admin-controlled fields are never overwritten by a normal sync
+      // admin & tag stay admin-controlled; the user owns their own name style
       admin: existing.admin ?? false,
       tag: existing.tag ?? null,
-      style: existing.style ?? null,
+      style: "style" in body ? sanitizeStyle(body.style) : existing.style ?? null,
       lastSeen: Date.now(),
     };
     await hset(KEY, id, JSON.stringify(profile));

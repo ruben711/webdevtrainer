@@ -8,6 +8,7 @@ import { FileTabs } from "@/components/FileTabs";
 import { FileTree } from "@/components/FileTree";
 import { LivePreview, type Viewport } from "@/components/LivePreview";
 import { OutputPanel, type OutTab } from "@/components/OutputPanel";
+import { SolutionModal } from "@/components/SolutionModal";
 import { assemble, extOf } from "@/lib/iframeRunner";
 import { allPass, isRunnerMessage } from "@/lib/jsGrader";
 import { DIFFICULTY_LABEL, xpForDifficulty } from "@/lib/difficulty";
@@ -15,7 +16,7 @@ import { useProgress } from "@/lib/store";
 import { useMounted } from "@/lib/useMounted";
 import { levelInfo } from "@/lib/level";
 import { syncScore } from "@/lib/leaderboardSync";
-import { displayName, getUserId } from "@/lib/identity";
+import { displayName, getStyle, getUserId } from "@/lib/identity";
 import { fireXp } from "@/components/XpToast";
 import type { CheckResult, ConsoleEntry, Exercise, FileSpec, GradeCheck } from "@/lib/types";
 
@@ -53,6 +54,7 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
   const [running, setRunning] = useState(false);
   const [viewport, setViewport] = useState<Viewport>("desktop");
   const [showHint, setShowHint] = useState(false);
+  const [showSol, setShowSol] = useState(false);
   const [tab, setTab] = useState<OutTab>("console");
 
   const iframeRef = useRef<HTMLIFrameElement>(null); // visible live preview
@@ -139,6 +141,7 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
           level: levelInfo(st.xp).level,
           solved: Object.keys(st.solved).length,
           streak: st.streakCount,
+          style: getStyle(),
         });
       }
       if (ok && !solvedOnce.current) {
@@ -254,11 +257,12 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
     solvedOnce.current = false;
     setActive(firstEditable(exercise.files));
   };
-  const showSolution = () => {
+  const applySolution = () => {
     if (!exercise.solution) return;
     setFiles((fs) =>
       fs.map((f) => (exercise.solution![f.name] ? { ...f, content: exercise.solution![f.name] } : f))
     );
+    setShowSol(false);
     window.setTimeout(() => void evaluate(), 500);
   };
   const openInTab = () => {
@@ -371,7 +375,7 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
           <button
             className="num"
             style={{ fontSize: 12, color: "var(--text-3)", letterSpacing: "0.04em", marginTop: 22, display: "block" }}
-            onClick={showSolution}
+            onClick={() => setShowSol(true)}
           >
             ↳ toon modeloplossing
           </button>
@@ -430,6 +434,14 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
         sandbox="allow-scripts"
         style={{ position: "absolute", left: -99999, top: 0, width: 900, height: 640, border: 0, opacity: 0, pointerEvents: "none" }}
       />
+
+      {showSol && exercise.solution && (
+        <SolutionModal
+          solution={exercise.solution}
+          onApply={applySolution}
+          onClose={() => setShowSol(false)}
+        />
+      )}
     </div>
   );
 }

@@ -39,6 +39,7 @@ export const ICONS: Record<string, string> = {
   clipboard: "M9 4h6v3H9zM7 5H5v15h14V5h-2M9 11h6M9 15h4",
   beaker: "M9 3h6M10 3v6l-5.2 9a2 2 0 0 0 1.8 3h10.8a2 2 0 0 0 1.8-3L14 9V3M7.5 15h9",
   bell: "M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0",
+  crown: "M4 18 L20 18 L21 8 L15.5 11.5 L12 5 L8.5 11.5 L3 8 Z",
   eye: "M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7zM12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0-6 0",
 };
 

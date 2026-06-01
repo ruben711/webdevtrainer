@@ -1,3 +1,5 @@
+import type { NameStyle, NameTag } from "./nameStyle";
+
 export interface LiveRow {
   id: string;
   name: string;
@@ -7,8 +9,8 @@ export interface LiveRow {
   streak: number;
   rank: number;
   admin?: boolean;
-  tag?: { label: string; color: string; emoji?: string } | null;
-  style?: Record<string, unknown> | null;
+  tag?: NameTag | null;
+  style?: NameStyle | null;
 }
 
 export interface LeaderboardResponse {
@@ -23,6 +25,7 @@ export interface ScorePayload {
   level: number;
   solved: number;
   streak: number;
+  style?: NameStyle | null;
 }
 
 export async function fetchLeaderboard(): Promise<LeaderboardResponse> {

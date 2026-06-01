@@ -3,10 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
 import { StyledName } from "@/components/StyledName";
+import { NameStyleEditor } from "@/components/NameStyleEditor";
 import { Avatar, Reveal, useReveal } from "@/components/ui";
-import { displayName, getUserId, setName } from "@/lib/identity";
+import { displayName, getStyle, getUserId, setName, setStyle } from "@/lib/identity";
 import { levelInfo } from "@/lib/level";
 import { fetchLeaderboard, syncScore, type LiveRow } from "@/lib/leaderboardSync";
+import { EMPTY_STYLE, type NameStyle } from "@/lib/nameStyle";
 import { useProgress } from "@/lib/store";
 import { useMounted } from "@/lib/useMounted";
 
@@ -59,8 +61,10 @@ export default function LeaderboardPage() {
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [rows, setRows] = useState<LiveRow[]>([]);
   const [me, setMe] = useState("");
-  const [editing, setEditing] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [nameInput, setNameInput] = useState("");
+  const [styleDraft, setStyleDraft] = useState<NameStyle>(EMPTY_STYLE);
+  const [myStyle, setMyStyle] = useState<NameStyle | null>(null);
 
   const xp = useProgress((s) => s.xp);
   const solved = useProgress((s) => Object.keys(s.solved).length);
@@ -74,6 +78,7 @@ export default function LeaderboardPage() {
       level: levelInfo(xp).level,
       solved,
       streak,
+      style: getStyle(),
     });
     const res = await fetchLeaderboard();
     setEnabled(res.enabled);
@@ -84,6 +89,7 @@ export default function LeaderboardPage() {
     if (!mounted) return;
     setMe(getUserId());
     setNameInput(displayName());
+    setMyStyle(getStyle());
     void pushAndLoad();
     const t = setInterval(() => {
       void fetchLeaderboard().then((r) => {
@@ -94,9 +100,26 @@ export default function LeaderboardPage() {
     return () => clearInterval(t);
   }, [mounted, pushAndLoad]);
 
-  const saveName = () => {
+  const openEditor = () => {
+    setNameInput(displayName());
+    setStyleDraft(getStyle() || EMPTY_STYLE);
+    setModalOpen(true);
+  };
+  const saveProfile = () => {
     if (nameInput.trim()) setName(nameInput.trim());
-    setEditing(false);
+    const d = styleDraft;
+    const hasStyle = !!(
+      d.color ||
+      d.gradient ||
+      d.glow ||
+      d.stroke ||
+      (d.font && d.font !== "display") ||
+      (d.animation && d.animation !== "none")
+    );
+    const next = hasStyle ? d : null;
+    setStyle(next);
+    setMyStyle(next);
+    setModalOpen(false);
     void pushAndLoad();
   };
 
@@ -112,34 +135,16 @@ export default function LeaderboardPage() {
           <h1>Klassement</h1>
         </div>
         {mounted && (
-          <div className="card" style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-            {editing ? (
-              <>
-                <input
-                  className="note-area"
-                  style={{ minHeight: 0, height: 36, width: 160, marginTop: 0 }}
-                  value={nameInput}
-                  maxLength={24}
-                  onChange={(e) => setNameInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && saveName()}
-                  placeholder="Je naam…"
-                  autoFocus
-                />
-                <button className="btn btn-primary" style={{ padding: "8px 14px", fontSize: 13 }} onClick={saveName}>
-                  Opslaan
-                </button>
-              </>
-            ) : (
-              <>
-                <div style={{ minWidth: 0 }}>
-                  <div className="label-mono">Jouw naam</div>
-                  <div style={{ fontFamily: "var(--font-display)", fontWeight: 600 }}>{displayName()}</div>
-                </div>
-                <button className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: 13 }} onClick={() => setEditing(true)}>
-                  Wijzig
-                </button>
-              </>
-            )}
+          <div className="card" style={{ padding: "12px 16px", display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ minWidth: 0 }}>
+              <div className="label-mono">Jouw naam</div>
+              <div style={{ marginTop: 4 }}>
+                <StyledName name={displayName()} style={myStyle} size={15} />
+              </div>
+            </div>
+            <button className="btn btn-ghost" style={{ padding: "8px 14px", fontSize: 13 }} onClick={openEditor}>
+              Wijzig uiterlijk
+            </button>
           </div>
         )}
       </Reveal>
@@ -226,6 +231,39 @@ export default function LeaderboardPage() {
             </Reveal>
           )}
         </>
+      )}
+
+      {modalOpen && (
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setModalOpen(false)}>
+          <div className="modal-card scroll">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <h2 style={{ fontSize: 20 }}>Naam &amp; uiterlijk</h2>
+              <button className="theme-toggle" onClick={() => setModalOpen(false)} aria-label="Sluiten">
+                <Icon name="x" size={16} />
+              </button>
+            </div>
+            <span className="label-mono">Naam</span>
+            <input
+              className="admin-input"
+              style={{ width: "100%", marginTop: 6 }}
+              value={nameInput}
+              maxLength={24}
+              onChange={(e) => setNameInput(e.target.value)}
+              placeholder="Je naam…"
+            />
+            <div style={{ marginTop: 16 }}>
+              <NameStyleEditor name={nameInput} value={styleDraft} onChange={setStyleDraft} />
+            </div>
+            <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={saveProfile}>
+                Opslaan
+              </button>
+              <button className="btn btn-ghost" onClick={() => setModalOpen(false)}>
+                Annuleer
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

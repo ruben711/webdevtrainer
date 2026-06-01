@@ -1,8 +1,11 @@
 /* Anonymous-by-default identity, stored in localStorage. The user can pick a
    display name; otherwise they're "Speler<xxxx>". */
 
+import type { NameStyle } from "./nameStyle";
+
 const ID_KEY = "ck-uid";
 const NAME_KEY = "ck-name";
+const STYLE_KEY = "ck-namestyle";
 
 export function getUserId(): string {
   if (typeof window === "undefined") return "server";
@@ -38,4 +41,23 @@ export function setName(name: string): void {
 
 export function displayName(): string {
   return getName() || "Speler" + getUserId().slice(-4);
+}
+
+export function getStyle(): NameStyle | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const s = localStorage.getItem(STYLE_KEY);
+    return s ? (JSON.parse(s) as NameStyle) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setStyle(style: NameStyle | null): void {
+  try {
+    if (!style) localStorage.removeItem(STYLE_KEY);
+    else localStorage.setItem(STYLE_KEY, JSON.stringify(style));
+  } catch {
+    /* ignore */
+  }
 }

@@ -1,61 +1,67 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { AdminBadge } from "@/components/AdminBadge";
+import type { NameStyle, NameTag } from "@/lib/nameStyle";
 
-export interface NameStyle {
-  color?: string;
-  gradient?: [string, string];
-  glow?: boolean;
-}
-export interface NameTag {
-  label: string;
-  color: string;
-  emoji?: string;
-}
+const FONT_FAMILY: Record<string, string> = {
+  display: "var(--font-display)",
+  mono: "var(--font-mono)",
+  pixel: "'Press Start 2P', var(--font-mono)",
+};
 
-/* Basic name rendering: admin crown (glowing gold) + optional colour/gradient
-   + optional custom tag. The richer effects (particles, rainbow, …) from the
-   spec can be layered on later via the `style` object. */
 export function StyledName({
   name,
   admin = false,
   tag = null,
   style = null,
   size = 15,
+  badgeCompact = false,
 }: {
   name: string;
   admin?: boolean;
   tag?: NameTag | null;
   style?: NameStyle | null;
   size?: number;
+  badgeCompact?: boolean;
 }) {
+  const s = style || {};
+  const anim = s.animation || "none";
+  const font = s.font || "display";
+  const isPixel = font === "pixel";
+
   const css: CSSProperties = {
-    fontFamily: "var(--font-display)",
+    fontFamily: FONT_FAMILY[font] || FONT_FAMILY.display,
     fontWeight: 600,
-    fontSize: size,
+    fontSize: isPixel ? Math.round(size * 0.72) : size,
+    lineHeight: 1.2,
   };
-  if (style?.gradient) {
-    css.background = `linear-gradient(90deg, ${style.gradient[0]}, ${style.gradient[1]})`;
+
+  const classes = ["ck-nm"];
+  if (anim === "rainbow") {
+    classes.push("ck-nm-rainbow"); // class owns the animated gradient text
+  } else if (s.gradient) {
+    css.background = `linear-gradient(90deg, ${s.gradient[0]}, ${s.gradient[1]})`;
     css.WebkitBackgroundClip = "text";
     css.backgroundClip = "text";
     css.color = "transparent";
-  } else if (style?.color) {
-    css.color = style.color;
+  } else if (s.color) {
+    css.color = s.color;
   }
-  if (style?.glow && style?.color) {
-    css.textShadow = `0 0 10px ${style.color}88`;
+  if (anim === "pulse") classes.push("ck-nm-pulse");
+  if (anim === "shake") classes.push("ck-nm-shake");
+  if (s.stroke) classes.push("ck-nm-stroke");
+  if (s.glow) {
+    const g = s.color || (s.gradient && s.gradient[0]) || "var(--accent)";
+    css.filter = `drop-shadow(0 0 6px ${g})`;
   }
+
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-      {admin && (
-        <span
-          title="Beheerder"
-          style={{ filter: "drop-shadow(0 0 5px rgba(245,196,81,0.7))", fontSize: size - 1 }}
-        >
-          👑
-        </span>
-      )}
-      <span style={css}>{name}</span>
+      {admin && <AdminBadge compact={badgeCompact} />}
+      <span className={classes.join(" ")} style={css}>
+        {name}
+      </span>
       {tag && (
         <span
           className="chip"
