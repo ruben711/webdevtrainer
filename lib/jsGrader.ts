@@ -58,6 +58,14 @@ function __ckGrade(checks: any[], ctx: any): any[] {
     try {
       if (c.type === "console") {
         const levels = c.levels || ["log"];
+        // If the check has `before` actions (e.g. move a slider), clear the
+        // captured console first, run the actions, then read only the new output.
+        if (c.before && c.before.length) {
+          // clear in-place so the harness's console.log override keeps pushing
+          // to the SAME array (reassignment would break the reference)
+          ctx.console.splice(0);
+          runActions(c.before);
+        }
         const out = (ctx.console || [])
           .filter((e: any) => levels.indexOf(e.level) >= 0)
           .map((e: any) => e.text)

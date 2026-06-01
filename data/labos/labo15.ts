@@ -222,6 +222,7 @@ export const labo15: ChapterContent = {
           type: "console",
           id: "log-bij-sleep",
           label: 'Na het verslepen log je "de waarde van de slider is momenteel : 80"',
+          before: [{ action: "input", selector: ".slider", value: "80" }],
           expected: "de waarde van de slider is momenteel : 80",
           match: "includes",
         },

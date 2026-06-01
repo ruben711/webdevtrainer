@@ -29,6 +29,10 @@ export interface ConsoleCheck {
   match?: "equals" | "includes";
   /** which console levels to include (default: ["log"]) */
   levels?: ConsoleLevel[];
+  /** optional DOM actions to perform BEFORE reading the console
+      (e.g. move a slider to trigger an event-driven console.log).
+      The captured console is cleared first so only the new output is measured. */
+  before?: DomAction[];
 }
 
 /** 2. function-return — call a global function, compare return values */
