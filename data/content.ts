@@ -47,4 +47,10 @@ export function getChapter(id: string): Chapter | undefined {
   return chapters.find((c) => c.id === id);
 }
 
+/** the next exercise (across all chapters, in order) after `id`, or null at the end */
+export function nextExerciseId(id: string): string | null {
+  const i = exercises.findIndex((e) => e.id === id);
+  return i >= 0 && i < exercises.length - 1 ? exercises[i + 1].id : null;
+}
+
 export const firstExerciseId = exercises[0]?.id ?? "";

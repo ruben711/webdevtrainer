@@ -9,7 +9,6 @@ export function FileTabs({
   setActive,
   errorFiles,
   onRun,
-  onReset,
   running,
 }: {
   files: FileSpec[];
@@ -17,7 +16,6 @@ export function FileTabs({
   setActive: (name: string) => void;
   errorFiles: Set<string>;
   onRun: () => void;
-  onReset: () => void;
   running: boolean;
 }) {
   return (
@@ -35,10 +33,6 @@ export function FileTabs({
         ))}
       </div>
       <div className="run-bar" style={{ paddingRight: 10, paddingLeft: 10 }}>
-        <button className="btn btn-ghost" style={{ padding: "7px 12px", fontSize: 12.5 }} onClick={onReset}>
-          <Icon name="refresh" size={14} />
-          Reset
-        </button>
         <button className="btn btn-primary" style={{ padding: "7px 15px", fontSize: 13 }} onClick={onRun}>
           <Icon name="play" size={14} fill />
           {running ? "bezig…" : "Run & check"}

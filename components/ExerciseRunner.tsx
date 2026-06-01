@@ -17,6 +17,7 @@ import { useMounted } from "@/lib/useMounted";
 import { levelInfo } from "@/lib/level";
 import { syncScore } from "@/lib/leaderboardSync";
 import { displayName, getStyle, getUserId } from "@/lib/identity";
+import { nextExerciseId } from "@/data/content";
 import { fireXp } from "@/components/XpToast";
 import type { CheckResult, ConsoleEntry, Exercise, FileSpec, GradeCheck } from "@/lib/types";
 
@@ -73,7 +74,6 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
   const pendingRef = useRef<((r: CheckResult[]) => void) | null>(null);
   const passTimeoutRef = useRef<number>(0);
 
-  const activeFile = files.find((f) => f.name === active) || files[0];
   const resById = useMemo(() => {
     const m: Record<string, CheckResult> = {};
     results.forEach((r) => (m[r.id] = r));
@@ -231,8 +231,8 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
     return () => window.clearTimeout(id);
   }, [files, exercise.id]);
 
-  const setContent = (val: string) =>
-    setFiles((fs) => fs.map((f) => (f.name === active ? { ...f, content: val } : f)));
+  const setContent = (name: string, val: string) =>
+    setFiles((fs) => fs.map((f) => (f.name === name ? { ...f, content: val } : f)));
 
   const addFile = () => {
     const name = (window.prompt("Bestandsnaam (bv. js/helpers.js of data.json):") || "").trim();
@@ -273,6 +273,7 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
   };
 
   const xp = xpForDifficulty(exercise.difficulty);
+  const nextId = nextExerciseId(exercise.id);
 
   return (
     <div className="ex-layout">
@@ -326,6 +327,21 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
           </>
         )}
 
+        <div style={{ display: "flex", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
+          <button className="btn btn-ghost" style={{ fontSize: 12.5, padding: "8px 13px" }} onClick={reset}>
+            <Icon name="refresh" size={14} />
+            Reset
+          </button>
+          <Link
+            href={nextId ? `/oefeningen/${nextId}` : "/oefeningen"}
+            className="btn btn-ghost"
+            style={{ fontSize: 12.5, padding: "8px 13px", textDecoration: "none" }}
+          >
+            {nextId ? "Volgende oefening" : "Naar oefeningen"}
+            <Icon name="arrow" size={14} />
+          </Link>
+        </div>
+
         <div className="obj-head">
           <span className="kicker">Doelen</span>
           <span className="obj-count num" style={{ color: status === "ok" ? "var(--good)" : "var(--text-2)" }}>
@@ -353,8 +369,12 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
             <p className="ex-brief-text" style={{ marginTop: 8, fontSize: 13.5 }}>
               Netjes — alle doelen geslaagd. Probeer gerust een andere oefening.
             </p>
-            <Link href="/oefeningen" className="btn btn-primary" style={{ marginTop: 16, textDecoration: "none" }}>
-              Meer oefeningen <Icon name="arrow" size={15} />
+            <Link
+              href={nextId ? `/oefeningen/${nextId}` : "/oefeningen"}
+              className="btn btn-primary"
+              style={{ marginTop: 16, textDecoration: "none" }}
+            >
+              {nextId ? "Volgende oefening" : "Naar oefeningen"} <Icon name="arrow" size={15} />
             </Link>
           </div>
         )}
@@ -400,15 +420,13 @@ export function ExerciseRunner({ exercise }: { exercise: Exercise }) {
               setActive={setActive}
               errorFiles={errorFiles}
               onRun={() => void evaluate()}
-              onReset={reset}
               running={running}
             />
             <CodeEditor
-              file={activeFile.name}
-              value={activeFile.content}
+              files={files}
+              active={active}
               onChange={setContent}
               onRun={() => void evaluate()}
-              readOnly={activeFile.readOnly}
               pathPrefix={exercise.id}
             />
           </div>
