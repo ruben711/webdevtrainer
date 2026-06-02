@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
+import { CustomTag } from "@/components/CustomTag";
+import type { NameTag } from "@/lib/nameStyle";
 
 interface AdminUser {
   id: string;
@@ -11,8 +13,12 @@ interface AdminUser {
   solved: number;
   streak: number;
   admin?: boolean;
-  tag?: { label: string; color: string; emoji?: string } | null;
+  tag?: NameTag | null;
 }
+
+const TAG_COLORS = ["#c4f542", "#34e3da", "#ff5da2", "#ff8a3d", "#f5c451", "#ff5d4d", "#a78bfa", "#5a9bff", "#888888"];
+
+type TagDraft = { id: string; label: string; color: string; emoji: string; hasExisting: boolean };
 
 export default function AdminPage() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +30,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [notify, setNotify] = useState({ scope: "all", userId: "", type: "info", title: "", body: "" });
   const [notifyMsg, setNotifyMsg] = useState("");
+  const [tagDraft, setTagDraft] = useState<TagDraft | null>(null);
 
   const refreshMe = useCallback(async () => {
     try {
@@ -77,6 +84,31 @@ export default function AdminPage() {
       body: JSON.stringify(body),
     });
     void loadUsers();
+  };
+
+  const openTagEditor = (u: AdminUser) => {
+    setTagDraft({
+      id: u.id,
+      label: u.tag?.label || "VIP",
+      color: u.tag?.color || "#c4f542",
+      emoji: u.tag?.emoji || "",
+      hasExisting: !!u.tag,
+    });
+  };
+  const saveTag = () => {
+    if (!tagDraft) return;
+    const tag: NameTag = {
+      label: tagDraft.label.trim().slice(0, 16) || "TAG",
+      color: tagDraft.color,
+      ...(tagDraft.emoji.trim() ? { emoji: tagDraft.emoji.trim().slice(0, 2) } : {}),
+    };
+    void userAction({ action: "setTag", id: tagDraft.id, tag });
+    setTagDraft(null);
+  };
+  const removeTag = () => {
+    if (!tagDraft) return;
+    void userAction({ action: "setTag", id: tagDraft.id, tag: null });
+    setTagDraft(null);
   };
 
   const sendNotify = async () => {
@@ -146,34 +178,41 @@ export default function AdminPage() {
 
       {tab === "users" && (
         <div className="card" style={{ padding: "6px 8px" }}>
-          {users.length === 0 && <p style={{ padding: 20, color: "var(--text-3)", textAlign: "center" }}>Nog geen spelers (of geen Upstash geconfigureerd).</p>}
+          {users.length === 0 && (
+            <p style={{ padding: 20, color: "var(--text-3)", textAlign: "center" }}>
+              Nog geen spelers (of geen Upstash geconfigureerd).
+            </p>
+          )}
           {users.map((u) => (
             <div className="admin-row" key={u.id}>
               <button
                 title="Admin aan/uit"
                 onClick={() => userAction({ action: "toggleAdmin", id: u.id })}
-                style={{ fontSize: 18, opacity: u.admin ? 1 : 0.3 }}
+                style={{ fontSize: 18, opacity: u.admin ? 1 : 0.3, flex: "none" }}
               >
                 👑
               </button>
               <input
                 className="admin-input"
+                style={{ flex: 1, minWidth: 0 }}
                 defaultValue={u.name}
+                key={u.name}
                 onBlur={(e) => e.target.value !== u.name && userAction({ action: "update", id: u.id, name: e.target.value })}
               />
+              {u.tag && <CustomTag label={u.tag.label} color={u.tag.color} emoji={u.tag.emoji} />}
               <input
                 className="admin-input num"
                 type="number"
                 defaultValue={u.xp}
-                style={{ width: 90, textAlign: "right" }}
+                key={u.xp}
+                style={{ width: 78, textAlign: "right", flex: "none" }}
                 onBlur={(e) => Number(e.target.value) !== u.xp && userAction({ action: "update", id: u.id, xp: Number(e.target.value) })}
               />
-              <button
-                title="Verwijderen"
-                onClick={() => userAction({ action: "delete", id: u.id })}
-                style={{ color: "var(--bad)" }}
-              >
-                <Icon name="x" size={16} />
+              <button className="admin-iconbtn" title="Tag toekennen" onClick={() => openTagEditor(u)}>
+                <Icon name="star" size={15} fill={!!u.tag} style={u.tag ? { color: u.tag.color } : undefined} />
+              </button>
+              <button className="admin-iconbtn" title="Verwijderen" onClick={() => userAction({ action: "delete", id: u.id })} style={{ color: "var(--bad)" }}>
+                <Icon name="x" size={15} />
               </button>
             </div>
           ))}
@@ -201,6 +240,83 @@ export default function AdminPage() {
           <textarea className="admin-input" placeholder="Bericht" rows={3} value={notify.body} onChange={(e) => setNotify({ ...notify, body: e.target.value })} />
           <button className="btn btn-primary" onClick={sendNotify}>Versturen</button>
           {notifyMsg && <p style={{ fontSize: 13, color: "var(--accent)" }}>{notifyMsg}</p>}
+        </div>
+      )}
+
+      {/* ─────────── TAG-EDITOR MODAL ─────────── */}
+      {tagDraft && (
+        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setTagDraft(null)}>
+          <div className="modal-card">
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <h2 style={{ fontSize: 20 }}>Tag toekennen</h2>
+              <button className="theme-toggle" onClick={() => setTagDraft(null)} aria-label="Sluiten">
+                <Icon name="x" size={16} />
+              </button>
+            </div>
+
+            <div className="style-preview">
+              <CustomTag
+                label={tagDraft.label || "TAG"}
+                color={tagDraft.color}
+                emoji={tagDraft.emoji || undefined}
+                size={13}
+              />
+            </div>
+
+            <div className="style-field">
+              <span className="label-mono">Naam</span>
+              <input
+                className="admin-input"
+                style={{ width: "100%", marginTop: 6 }}
+                value={tagDraft.label}
+                maxLength={16}
+                placeholder="bv. VIP, MOD, PRO…"
+                onChange={(e) => setTagDraft({ ...tagDraft, label: e.target.value })}
+              />
+            </div>
+
+            <div className="style-field">
+              <span className="label-mono">Emoji (optioneel)</span>
+              <input
+                className="admin-input"
+                style={{ width: 80, marginTop: 6 }}
+                value={tagDraft.emoji}
+                maxLength={2}
+                placeholder="★ 🔥 💎"
+                onChange={(e) => setTagDraft({ ...tagDraft, emoji: e.target.value })}
+              />
+            </div>
+
+            <div className="style-field">
+              <span className="label-mono">Kleur</span>
+              <div className="swatch-row" style={{ alignItems: "center" }}>
+                {TAG_COLORS.map((col) => (
+                  <button
+                    key={col}
+                    type="button"
+                    className={`swatch ${tagDraft.color.toLowerCase() === col ? "on" : ""}`}
+                    style={{ background: col }}
+                    onClick={() => setTagDraft({ ...tagDraft, color: col })}
+                  />
+                ))}
+                <input
+                  type="color"
+                  value={tagDraft.color}
+                  onChange={(e) => setTagDraft({ ...tagDraft, color: e.target.value })}
+                  style={{ width: 34, height: 30, border: "1px solid var(--border-2)", borderRadius: 8, background: "var(--surface-2)", cursor: "pointer" }}
+                  title="Eigen kleur"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={saveTag}>Toepassen</button>
+              {tagDraft.hasExisting && (
+                <button className="btn btn-ghost" style={{ color: "var(--bad)" }} onClick={removeTag}>Verwijderen</button>
+              )}
+              <button className="btn btn-ghost" onClick={() => setTagDraft(null)}>Sluiten</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

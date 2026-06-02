@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { AdminBadge } from "@/components/AdminBadge";
+import { CustomTag } from "@/components/CustomTag";
 import type { NameStyle, NameTag } from "@/lib/nameStyle";
 
 const FONT_FAMILY: Record<string, string> = {
@@ -62,21 +63,7 @@ export function StyledName({
       <span className={classes.join(" ")} style={css}>
         {name}
       </span>
-      {tag && (
-        <span
-          className="chip"
-          style={{
-            padding: "2px 8px",
-            fontSize: 10.5,
-            color: tag.color,
-            borderColor: tag.color + "55",
-            background: tag.color + "1a",
-          }}
-        >
-          {tag.emoji ? tag.emoji + " " : ""}
-          {tag.label}
-        </span>
-      )}
+      {tag && <CustomTag label={tag.label} color={tag.color} emoji={tag.emoji} />}
     </span>
   );
 }
