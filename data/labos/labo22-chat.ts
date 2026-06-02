@@ -339,6 +339,7 @@ export const chatExercise: Exercise = {
       type: "dom",
       id: "chat-verstuur",
       label: "Een verstuurd bericht verschijnt in de chat",
+      settleMs: 1200,
       before: [
         { action: "input", selector: "#message-input", value: "Hallo wereld" },
         { action: "click", selector: "#send-button" },
@@ -352,6 +353,7 @@ export const chatExercise: Exercise = {
       type: "dom",
       id: "chat-eigen",
       label: "Je eigen bericht krijgt de klasse same-user en een verwijderknop",
+      settleMs: 1200,
       before: [
         { action: "input", selector: "#message-input", value: "Test 123" },
         { action: "click", selector: "#send-button" },
@@ -365,6 +367,7 @@ export const chatExercise: Exercise = {
       type: "dom",
       id: "chat-emoji",
       label: "Smileys worden omgezet naar emoji ( :) wordt 😄 )",
+      settleMs: 1200,
       before: [
         { action: "input", selector: "#message-input", value: ":)" },
         { action: "click", selector: "#send-button" },
@@ -389,6 +392,7 @@ export const chatExercise: Exercise = {
       type: "dom",
       id: "chat-wis",
       label: "'Wis alles' maakt de chat helemaal leeg",
+      settleMs: 1200,
       before: [
         { action: "input", selector: "#message-input", value: "weg hiermee" },
         { action: "click", selector: "#send-button" },

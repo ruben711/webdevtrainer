@@ -71,6 +71,9 @@ export interface DomCheck {
   id: string;
   label: string;
   before?: DomAction[];
+  /** wait this many ms after the `before` actions before asserting — lets
+      interval/timeout-driven renders settle (e.g. a 1s live-refresh poller). */
+  settleMs?: number;
   assertions: DomAssertion[];
 }
 
@@ -87,6 +90,8 @@ export interface CssCheck {
   id: string;
   label: string;
   before?: DomAction[];
+  /** wait this many ms after the `before` actions before asserting (see DomCheck). */
+  settleMs?: number;
   checks: CssAssertion[];
 }
 

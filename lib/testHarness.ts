@@ -58,13 +58,48 @@ function __ckHarness() {
   });
 
   w.__ckRunChecks = function (checks: any) {
-    try {
-      const results = w.__ckGrade(checks, { console: w.__ck.console, files: w.__ck.files });
-      post({ kind: "results", results });
-    } catch (e: any) {
-      post({ kind: "error", text: "Grader-fout: " + (e && e.message ? e.message : e) });
-      post({ kind: "results", results: [] });
+    const ctx = { console: w.__ck.console, files: w.__ck.files };
+    const grade = function () {
+      try {
+        const results = w.__ckGrade(checks, ctx);
+        post({ kind: "results", results });
+      } catch (e: any) {
+        post({ kind: "error", text: "Grader-fout: " + (e && e.message ? e.message : e) });
+        post({ kind: "results", results: [] });
+      }
+    };
+    // A dom/css check may opt into a `settleMs` delay so interval/timeout-driven
+    // renders (e.g. a 1s live-refresh poller) finish before we assert. We fire
+    // those checks' `before` actions NOW, wait, then grade — clearing `before`
+    // first so the grader doesn't fire the same actions a second time.
+    let settle = 0;
+    (checks || []).forEach((c: any) => {
+      if ((c.type === "dom" || c.type === "css") && c.settleMs && c.settleMs > settle) settle = c.settleMs;
+    });
+    if (!settle) {
+      grade();
+      return;
     }
+    const fire = function (el: any, action: string, value?: string) {
+      if (action === "click") el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      else if (action === "input") {
+        if ("value" in el) el.value = value;
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      } else if (action === "submit") el.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    };
+    (checks || []).forEach((c: any) => {
+      if ((c.type === "dom" || c.type === "css") && c.settleMs && c.before) {
+        c.before.forEach((a: any) => {
+          const times = a.times || 1;
+          for (let i = 0; i < times; i++) {
+            document.querySelectorAll(a.selector).forEach((el: any) => fire(el, a.action, a.value));
+          }
+        });
+        c.before = [];
+      }
+    });
+    setTimeout(grade, settle);
   };
 
   post({ kind: "ready" });
