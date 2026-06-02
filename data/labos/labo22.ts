@@ -1,6 +1,7 @@
 import type { ChapterContent } from "@/lib/types";
 import { chatExercise } from "./labo22-chat";
 import { takenExercise } from "./labo22-taken";
+import { quizExercise } from "./labo22-quiz";
 
 /* ════════════════════════════════════════════════════════════════════
    Labo 22 — My internet startpage (eindproject)
@@ -88,7 +89,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 1,
-      of: 7,
+      of: 8,
       title: "Begroeting volgens het uur",
       tag: "JS",
       difficulty: "easy",
@@ -154,7 +155,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 2,
-      of: 7,
+      of: 8,
       title: "Een tikkende klok",
       tag: "JS",
       difficulty: "medium",
@@ -232,7 +233,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 3,
-      of: 7,
+      of: 8,
       title: "Snelle links uit een array",
       tag: "JS",
       difficulty: "medium",
@@ -304,7 +305,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 4,
-      of: 7,
+      of: 8,
       title: "Een zoekcommando ontleden",
       tag: "JS",
       difficulty: "medium",
@@ -388,7 +389,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 5,
-      of: 7,
+      of: 8,
       title: "Eindproject: My internet startpage",
       tag: "JS",
       difficulty: "hard",
@@ -497,5 +498,8 @@ export const labo22: ChapterContent = {
 
     /* ── 7. Capstone: een takenlijst met prioriteiten ──────────────── */
     takenExercise,
+
+    /* ── 8. Capstone: een quiz met scoreverloop ────────────────────── */
+    quizExercise,
   ],
 };

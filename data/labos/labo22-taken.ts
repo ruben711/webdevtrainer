@@ -284,7 +284,7 @@ export const takenExercise: Exercise = {
   chapterId: "labo22",
   chapter: "My internet startpage",
   n: 7,
-  of: 7,
+  of: 8,
   title: "Capstone: een takenlijst met prioriteiten",
   tag: "JS",
   difficulty: "insane",
