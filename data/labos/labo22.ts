@@ -1,4 +1,5 @@
 import type { ChapterContent } from "@/lib/types";
+import { chatExercise } from "./labo22-chat";
 
 /* ════════════════════════════════════════════════════════════════════
    Labo 22 — My internet startpage (eindproject)
@@ -86,7 +87,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 1,
-      of: 5,
+      of: 6,
       title: "Begroeting volgens het uur",
       tag: "JS",
       difficulty: "easy",
@@ -152,7 +153,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 2,
-      of: 5,
+      of: 6,
       title: "Een tikkende klok",
       tag: "JS",
       difficulty: "medium",
@@ -230,7 +231,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 3,
-      of: 5,
+      of: 6,
       title: "Snelle links uit een array",
       tag: "JS",
       difficulty: "medium",
@@ -302,7 +303,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 4,
-      of: 5,
+      of: 6,
       title: "Een zoekcommando ontleden",
       tag: "JS",
       difficulty: "medium",
@@ -386,7 +387,7 @@ export const labo22: ChapterContent = {
       chapterId: "labo22",
       chapter: "My internet startpage",
       n: 5,
-      of: 5,
+      of: 6,
       title: "Eindproject: My internet startpage",
       tag: "JS",
       difficulty: "hard",
@@ -489,5 +490,8 @@ export const labo22: ChapterContent = {
           '// Gegeven helpers — laat deze staan.\nconst siteNaam = (prefix) => {\n  if (prefix === "/g") return "Google";\n  if (prefix === "/y") return "YouTube";\n  if (prefix === "/x") return "X";\n  if (prefix === "/i") return "Instagram";\n  return "";\n};\n\nconst maakUrl = (prefix, query) => {\n  if (prefix === "/g") return "https://www.google.com/search?q=" + query;\n  if (prefix === "/y") return "https://www.youtube.com/results?search_query=" + query;\n  if (prefix === "/x") return "https://x.com/hashtag/" + query;\n  if (prefix === "/i") return "https://www.instagram.com/explore/tags/" + query;\n  return "";\n};\n\n// Globale array met alle uitgevoerde commando\'s.\nlet history = [];\n\nconst toonKaart = (item) => {\n  const container = document.getElementById("history");\n\n  const card = document.createElement("div");\n  card.className = "card";\n\n  const titel = document.createElement("h5");\n  titel.className = "card-title";\n  titel.textContent = item.title;\n\n  const tekst = document.createElement("p");\n  tekst.className = "card-text";\n  tekst.textContent = item.text;\n\n  card.appendChild(titel);\n  card.appendChild(tekst);\n  container.appendChild(card);\n};\n\n// localStorage is in een sandbox niet altijd beschikbaar -> veilig opslaan/lezen.\nconst bewaar = () => {\n  try {\n    localStorage.setItem("history", JSON.stringify(history));\n  } catch (e) {\n    // opslaan kan mislukken (bv. in een sandbox); dan werken we gewoon zonder.\n  }\n};\n\nconst laad = () => {\n  try {\n    const opgeslagen = localStorage.getItem("history");\n    if (opgeslagen !== null) {\n      history = JSON.parse(opgeslagen);\n    }\n  } catch (e) {\n    history = [];\n  }\n};\n\nconst verwerk = () => {\n  const tekst = document.getElementById("input").value.trim();\n  const spatie = tekst.indexOf(" ");\n  if (spatie === -1) {\n    alert("Geef een commando én een zoekopdracht in.");\n    return;\n  }\n\n  const prefix = tekst.substring(0, spatie);\n  const query = tekst.substring(spatie + 1).trim();\n\n  const naam = siteNaam(prefix);\n  if (naam === "" || query === "") {\n    alert("Ongeldig commando: " + tekst);\n    return;\n  }\n\n  const item = {\n    title: naam,\n    text: query,\n    url: maakUrl(prefix, query),\n  };\n\n  history.push(item);\n  toonKaart(item);\n  bewaar();\n\n  // url openen in een nieuw tabblad (kan in een sandbox geblokkeerd zijn).\n  try {\n    window.open(item.url, "_blank");\n  } catch (e) {\n    // genegeerd\n  }\n\n  document.getElementById("input").value = "";\n};\n\nconst setup = () => {\n  laad();\n  history.forEach((item) => {\n    toonKaart(item);\n  });\n\n  const knop = document.getElementById("go");\n  knop.addEventListener("click", verwerk);\n};\n\nwindow.addEventListener("load", setup);',
       },
     },
+
+    /* ── 6. De ultieme oefening: een werkende chat ─────────────────── */
+    chatExercise,
   ],
 };
