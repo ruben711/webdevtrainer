@@ -15,7 +15,7 @@ const NAV: NavItem[] = [
   { href: "/oefeningen", label: "Oefeningen", icon: "list", match: (p) => p.startsWith("/oefeningen") },
   { href: "/sandbox", label: "Speeltuin", icon: "beaker" },
   { href: "/theorie", label: "Theorie", icon: "book" },
-  { href: "/examen", label: "Examen", icon: "clipboard" },
+  { href: "/examen", label: "Oefentoets", icon: "clipboard" },
   { href: "/leaderboard", label: "Klassement", icon: "trophy" },
 ];
 
