@@ -18,6 +18,7 @@ export function StyledName({
   style = null,
   size = 15,
   badgeCompact = false,
+  stacked = false,
 }: {
   name: string;
   admin?: boolean;
@@ -25,6 +26,8 @@ export function StyledName({
   style?: NameStyle | null;
   size?: number;
   badgeCompact?: boolean;
+  /** badge/tag boven de naam i.p.v. ernaast — handig bij smalle kolommen (podium) */
+  stacked?: boolean;
 }) {
   const s = style || {};
   const anim = s.animation || "none";
@@ -57,10 +60,31 @@ export function StyledName({
     css.filter = `drop-shadow(0 0 6px ${g})`;
   }
 
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+  const badges = admin || tag ? (
+    <>
       {admin && <AdminBadge compact={badgeCompact} />}
       {tag && <CustomTag label={tag.label} color={tag.color} emoji={tag.emoji} />}
+    </>
+  ) : null;
+
+  if (stacked) {
+    return (
+      <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 0 }}>
+        {badges && (
+          <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", flexWrap: "wrap", gap: 6, rowGap: 4 }}>
+            {badges}
+          </span>
+        )}
+        <span className={classes.join(" ")} style={{ ...css, textAlign: "center" }}>
+          {name}
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+      {badges}
       <span className={classes.join(" ")} style={css}>
         {name}
       </span>

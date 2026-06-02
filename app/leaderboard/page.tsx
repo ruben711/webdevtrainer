@@ -34,7 +34,7 @@ function Podium({ row, place }: { row: LiveRow; place: number }) {
           <Avatar name={row.name} size={place === 1 ? 60 : 50} />
         </div>
         <div className="podium-name">
-          <StyledName name={row.name} admin={row.admin} tag={row.tag} style={row.style as never} size={15.5} />
+          <StyledName name={row.name} admin={row.admin} tag={row.tag} style={row.style as never} size={15.5} stacked />
         </div>
         <div className="podium-xp">{row.xp.toLocaleString("nl-NL")} XP</div>
         <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 9 }}>
