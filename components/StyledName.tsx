@@ -60,10 +60,10 @@ export function StyledName({
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 7, minWidth: 0 }}>
       {admin && <AdminBadge compact={badgeCompact} />}
+      {tag && <CustomTag label={tag.label} color={tag.color} emoji={tag.emoji} />}
       <span className={classes.join(" ")} style={css}>
         {name}
       </span>
-      {tag && <CustomTag label={tag.label} color={tag.color} emoji={tag.emoji} />}
     </span>
   );
 }
