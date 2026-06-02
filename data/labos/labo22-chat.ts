@@ -299,7 +299,7 @@ export const chatExercise: Exercise = {
   chapterId: "labo22",
   chapter: "My internet startpage",
   n: 6,
-  of: 6,
+  of: 7,
   title: "De ultieme oefening: een werkende chat",
   tag: "JS",
   difficulty: "insane",
